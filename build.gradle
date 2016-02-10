@@ -70,7 +70,10 @@ dependencies {
 
 //Release task configuration
 	// Usage of the release task : ./gradlew release -Prelease.scope=major -Prelease.stage=final
-	// milestone rc final
+	// stage being one of : milestone rc final
+	// scope : major, minor, patch
+	
+
 import org.ajoberstar.grgit.*
 release {
 	// need to specify the repository to interact with
@@ -109,7 +112,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "core"
+        name = project.name
         websiteUrl = "https://github.com/simonduf/data"
         vcsUrl = "https://github.com/simonduf/data"
         licenses = ["LGPL-2.1"]
