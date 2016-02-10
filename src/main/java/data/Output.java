@@ -50,8 +50,8 @@ public class Output<T> extends NamedElement {
 	 * the ram allow but it will reject the input if the data type is not the same.
 	 * Throw a RuntimeException if the listener is already in the list.
 	 * 
-	 * @param input
-	 * @throws InvalidDataTypeException 
+	 * @param input the input to connect
+	 * @throws InvalidDataTypeException if data type does not match 
 	 */
 	@SuppressWarnings("unchecked")
 	public void connect(Input<?> input) throws InvalidDataTypeException {
@@ -69,7 +69,7 @@ public class Output<T> extends NamedElement {
 	/**
 	 * Remove the listener from the output.
 	 * Throw a runtimeException if the listener is not in the list.
-	 * @param dataListener is the listener to be removed
+	 * @param input is the listener to be removed
 	 */
 	public void disconect(Input<?> input) {
 		if (!inputs.remove(input)) {

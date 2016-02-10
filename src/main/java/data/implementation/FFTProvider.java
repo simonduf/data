@@ -14,9 +14,9 @@ import data.Output;
 import data.SampleList;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
+
 /**
  * @author sdufour
- * @param <T>
  *
  */
 public class FFTProvider extends Node {

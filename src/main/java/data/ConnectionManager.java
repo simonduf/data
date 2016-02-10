@@ -43,6 +43,8 @@ public class ConnectionManager implements NodeEventListener
 	 * @param o
 	 *            the output
 	 * @throws InvalidDataTypeException
+	 *             when the type expected by the input does not match with the
+	 *             one provided by the output
 	 */
 	public void connect(Input<?> i, Output<?> o) throws InvalidDataTypeException
 	{
@@ -92,7 +94,7 @@ public class ConnectionManager implements NodeEventListener
 	
 	/**
 	 * The connection manager has a list of node to not cascade the destruction of...
-	 * @param node
+	 * @param node is the node to keep when cascading disconections
 	 */
 	public void keep(Node node)
 	{
