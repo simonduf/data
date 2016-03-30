@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="output" path="bin"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/67313d715fbf0ea4fd0bdb69217fb77f807a8ce5/commons-lang-2.6-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/ce1edb914c94ebc388f086c6827e8bdeec71ac2/commons-lang-2.6.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/net.sourceforge.jtransforms/jtransforms/2.4.0/6f00e845e13a8b5d204fdfd2eca4e340048448fe/jtransforms-2.4.0-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/net.sourceforge.jtransforms/jtransforms/2.4.0/f96206c5c9a99f0373bb512b25b2cbd3afaaf2a8/jtransforms-2.4.0.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-log4j12/1.6.1/7a26b08b265f55622fa1fed3bda68bbd37a465ba/slf4j-log4j12-1.6.1-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-log4j12/1.6.1/bd245d6746cdd4e6203e976e21d597a46f115802/slf4j-log4j12-1.6.1.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.0.9/e898ae326277ae2fe7316935583d3f8c5df7aa9b/logback-classic-1.0.9-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.0.9/258c3d8f956e7c8723f13fdea6b81e3d74201f68/logback-classic-1.0.9.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.0.9/4511629c49389adc6192811b987b6e6b1b3189eb/logback-core-1.0.9-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.0.9/41916886a1df068ad1dfea9bcc649a7b8ea4553e/logback-core-1.0.9.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.16/bf945d1dc995be7fe64923625f842fbb6bf443be/log4j-1.2.16-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.16/7999a63bfccbc7c247a9aea10d83d4272bd492c6/log4j-1.2.16.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/junit/junit/4.8.2/cccca612a66b8387c399be31d69daf000de2ac9e/junit-4.8.2-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/junit/junit/4.8.2/c94f54227b08100974c36170dcb53329435fe5ad/junit-4.8.2.jar"/>
-	<classpathentry sourcepath="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.2/58d38f68d4a867d4552ae27960bb348d7eaa1297/slf4j-api-1.7.2-sources.jar" kind="lib" path="C:/Users/sdufour/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.2/81d61b7f33ebeab314e07de0cc596f8e858d97/slf4j-api-1.7.2.jar"/>
+	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
