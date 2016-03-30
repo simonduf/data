@@ -49,8 +49,8 @@ task wrapper(type: Wrapper) {
 
 dependencies {
 	
-	compile 'commons-lang:commons-lang:2.6'
-	compile 'net.sourceforge.jtransforms:jtransforms:2.4.0'
+	//compile 'commons-lang:commons-lang:2.6'
+	//compile 'net.sourceforge.jtransforms:jtransforms:2.4.0'
 	
 	compile 'org.slf4j:slf4j-api:1.6.1'				// Logging library.
 	compile 'ch.qos.logback:logback-classic:1.0.9'		// Logging library.
