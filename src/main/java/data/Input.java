@@ -34,7 +34,7 @@ public abstract class Input<T> extends NamedElement
 		return inputType;
 	}
 	
-	Output<T> getOutput()
+	public Output<T> getOutput()
 	{
 		return output;
 	}
