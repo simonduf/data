@@ -43,7 +43,7 @@ public class Sample
 	
 	private final int					count;
 	private final double				value;
-	private final long					time;
+	private final double					time;
 	private final long					sampleID;
 	private final ScalingInformation	scaling;
 	
@@ -53,7 +53,9 @@ public class Sample
 		
 		public int valueToCount(double value);
 		
-		public long sampleIdToTime(long id);
+		public double sampleIdToTime(long id);
+		
+		public long timeToSampleID(double time);
 		
 		public Unit getUnit();
 		
@@ -96,9 +98,15 @@ public class Sample
 			}
 
 			@Override
-			public long sampleIdToTime(long id)
+			public long timeToSampleID(double time)
 			{
-				return (long) (timeCoefficient*id);
+				return (long) (time/timeCoefficient);
+			}
+			
+			@Override
+			public double sampleIdToTime(long id)
+			{
+				return timeCoefficient*id;
 			}
 
 			@Override
@@ -134,7 +142,7 @@ public class Sample
 	/**
 	 * @return the time
 	 */
-	public long getTime()
+	public double getTime()
 	{
 		return time;
 	}
