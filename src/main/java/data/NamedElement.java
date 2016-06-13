@@ -20,4 +20,9 @@ public abstract class NamedElement
 	{
 		return name;
 	}
+	
+	public String toString()
+	{
+		return name;
+	}
 }

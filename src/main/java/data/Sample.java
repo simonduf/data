@@ -43,19 +43,29 @@ public class Sample
 	
 	private final int					count;
 	private final double				value;
-	private final long					time;
+	private final double					time;
 	private final long					sampleID;
 	private final ScalingInformation	scaling;
 	
 	public interface ScalingInformation
 	{
 		public double countToValue(int count);
-		
+
 		public int valueToCount(double value);
 		
-		public long sampleIdToTime(long id);
+		public double sampleIdToTime(long id);
 		
+		public long timeToSampleID(double time);
+		
+		/**
+		 * @return the specified unit or null if none was set
+		 */
 		public Unit getUnit();
+		
+		/**
+		 * @return The sample rate or 0 if no sample rate was set
+		 */
+		public double getSampleRate();
 		
 		public class SimpleScaling implements ScalingInformation
 		{
@@ -63,19 +73,34 @@ public class Sample
 			private final double valueCoefficient;
 			private final double ValueOffset;
 			private final double timeCoefficient;
+			private final double sampleRate;
+			private final Unit unit;
 			
+			@Deprecated
 			public SimpleScaling(int countMin, double valueMin, int countMax, double valueMax, final double timeCoefficient)
 			{
 				this.valueCoefficient = valueMax - (valueMax-valueMin)/(countMax-countMin);
 				this.ValueOffset = (this.valueCoefficient * countMax);
 				this.timeCoefficient = timeCoefficient;
+				
+				//TODO: fixme
+				unit = null;
+				sampleRate = 0;
 			}
 			
+			@Deprecated
 			public SimpleScaling(final double valueCoefficient, final double valueOffset, final double timeCoefficient)
+			{
+				this(valueCoefficient, valueOffset, timeCoefficient, null, 0);
+			}
+			
+			public SimpleScaling(final double valueCoefficient, final double valueOffset, final double timeCoefficient, final Unit unit, final double sampleRate)
 			{
 				this.valueCoefficient = valueCoefficient;
 				this.ValueOffset = valueOffset;
 				this.timeCoefficient = timeCoefficient;
+				this.unit = unit;
+				this.sampleRate = sampleRate;
 			}
 			
 			public SimpleScaling()
@@ -96,16 +121,27 @@ public class Sample
 			}
 
 			@Override
-			public long sampleIdToTime(long id)
+			public long timeToSampleID(double time)
 			{
-				return (long) (timeCoefficient*id);
+				return (long) (time/timeCoefficient);
+			}
+			
+			@Override
+			public double sampleIdToTime(long id)
+			{
+				return timeCoefficient*id;
 			}
 
 			@Override
 			public Unit getUnit()
 			{
-				//TODO
-				return null;
+				return unit;
+			}
+			
+			@Override
+			public double getSampleRate()
+			{
+				return sampleRate;
 			}
 			
 		}
@@ -113,7 +149,30 @@ public class Sample
 
 	}
 	
-	public enum Unit { VOLT	}
+	public enum Unit 
+	{ 
+		VOLT("Volt", "V"),
+		AMPS("Amperes", "A");
+		
+		String shortName;
+		String longName;
+		
+		Unit(String shortName, String longName)
+		{
+			this.shortName = shortName;
+			this.longName = longName;
+		}
+		
+		@Override
+		public String toString() {
+	        return longName;
+	    }
+		
+		public String getShortName()
+		{
+			return shortName;
+		}
+	}
 	
 	/**
 	 * @return the count
@@ -134,7 +193,7 @@ public class Sample
 	/**
 	 * @return the time
 	 */
-	public long getTime()
+	public double getTime()
 	{
 		return time;
 	}

@@ -9,13 +9,9 @@ public class SignalGenerator {
 	 * Generate a sinewave with the following parameters
 	 * 
 	 * @param amplitude
-	 *            the peak amplitude of the AC component (ie peak to peak /2)
 	 * @param offset
-	 *            the dc offset around witch the AC is centered.
 	 * @param frequency
-	 *            the frequency of the AC signal
 	 * @param sampleRate
-	 *            the sample rate of the signal
 	 * @param samples
 	 *            is the number of sample to fill. If this value is set to 0, a
 	 *            full sinewave will be generated
@@ -61,8 +57,8 @@ public class SignalGenerator {
 	 * This function calculate the closest clock that can be obtain, considering
 	 * only a clock divider by whole numbers.
 	 * 
-	 * @param mainClock the maximum clock of the device that will be divided
-	 * @param desiredClock the desired clock
+	 * @param mainClock
+	 * @param desiredClock
 	 * @return the closest clock
 	 */
 	public static int calcuclateCloserPossibleClock(int mainClock, int desiredClock) {
