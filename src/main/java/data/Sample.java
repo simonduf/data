@@ -79,7 +79,7 @@ public class Sample
 			@Deprecated
 			public SimpleScaling(int countMin, double valueMin, int countMax, double valueMax, final double timeCoefficient)
 			{
-				this.valueCoefficient = valueMax - (valueMax-valueMin)/(countMax-countMin);
+				this.valueCoefficient = (valueMax-valueMin)/(countMax-countMin);
 				this.ValueOffset = (this.valueCoefficient * countMax);
 				this.timeCoefficient = timeCoefficient;
 				
