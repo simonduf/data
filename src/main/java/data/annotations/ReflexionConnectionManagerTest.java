@@ -6,15 +6,7 @@ import org.junit.Test;
 
 public class ReflexionConnectionManagerTest {
 
-	@Test
-	public void testAdd() {
-		fail("Not yet implemented");
-	}
 
-	@Test
-	public void testConnect() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testIsNode() {
@@ -31,11 +23,6 @@ public class ReflexionConnectionManagerTest {
 		
 		assertFalse(cm.isNode(notANode));
 		assertTrue(cm.isNode(ANode));
-	}
-
-	@Test
-	public void testGetInput() {
-		fail("Not yet implemented");
 	}
 	
 
@@ -80,5 +67,22 @@ public class ReflexionConnectionManagerTest {
 		assertEquals(Double.class ,cm.getInputType(node.input));
 	}
 	
-	
+	@Test
+	public void testConnect() {
+		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		
+		@Node(name = "The Node!")
+		class ANode extends Object {
+			@SuppressWarnings("unused")
+			public Input<Double> input = new Input<Double>(this::processData){};
+			@SuppressWarnings("unused")
+			public Output<?> output = new Output<Double>(){};
+			private void processData(Double d){	}
+		};
+		
+		ANode node = new ANode();
+		ANode anotherNode = new ANode();
+		
+		cm.connect(node, "input", anotherNode, "output");
+	}
 }
