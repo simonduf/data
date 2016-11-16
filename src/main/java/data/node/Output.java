@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data.annotations;
+package data.node;
 
 import java.util.ArrayList;
 import java.util.List;

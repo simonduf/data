@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data.annotations;
+package data.node;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -34,6 +34,13 @@ public class ReflexionConnectionManager {
 		
 		Output output = getOutputByName(outputNode, outputName);
 		Input input = getInputByName(inputNode, inputName);
+		
+		if( output==null || input == null)
+			throw new RuntimeException();
+		//TODO exceptions
+		
+		if(getOutputType(output) != getInputType(input))
+			throw new RuntimeException();
 		
 		output.connect(input);
 	}

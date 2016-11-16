@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data;
+package data.sample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class SampleArrayList extends ArrayList<Sample> implements SampleList
 		List<Double> list = new ArrayList<Double>();
 		for(Sample s: this)
 		{
-			list.add(s.getValue());
+			list.add(s.y.value);
 		}
 		return list;
 	}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data.annotations;
+package data.node;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;

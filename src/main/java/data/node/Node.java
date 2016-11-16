@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data.annotations;
+package data.node;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
