@@ -1,7 +1,7 @@
 /**
  * 
  */
-package data;
+package data.sample;
 
 import java.util.List;
 
