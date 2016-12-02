@@ -18,6 +18,6 @@ import java.lang.annotation.Inherited;
 @Inherited
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Getter{
+public @interface Setter{
 	String name();
 }
