@@ -22,7 +22,7 @@ import data.exceptions.InvalidNodeOperationException;
  */
 public abstract class Output<T> {
 
-	private final List<Consumer<T>> inputs = new CopyOnWriteArrayList<>();
+	private final List<Input<T>> inputs = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Add a listener to this output. The output can have as many listener.
@@ -31,7 +31,7 @@ public abstract class Output<T> {
 	 * @param input the input to connect
 	 * @throws InvalidDataTypeException if data type does not match 
 	 */
-	public void connect(Consumer<T> input) throws InvalidDataTypeException {
+	public void connect(Input<T> input) throws InvalidDataTypeException {
 		if (inputs.contains(input))
 			throw new InvalidNodeOperationException("Listener already in the list" + input.toString());
 
@@ -43,14 +43,14 @@ public abstract class Output<T> {
 	 * Throw a runtimeException if the listener is not in the list.
 	 * @param input is the listener to be removed
 	 */
-	public void disconect(Consumer<T> input) {
+	public void disconect(Input<T> input) {
 		if (!inputs.remove(input)) {
 			throw new InvalidNodeOperationException("Listener not in the list" + input.toString());
 		}
 	}
 
-	public List<Consumer<T>> getConnectedInputs() {
-		return new ArrayList<Consumer<T>>(inputs);
+	public List<Input<T>> getConnectedInputs() {
+		return new ArrayList<Input<T>>(inputs);
 	}
 
 	//TODO catch exceptions?
@@ -59,7 +59,7 @@ public abstract class Output<T> {
 	 * @param data to send
 	 */
 	public void send(T data) {
-		for (Consumer<T> i : inputs) {
+		for (Input<T> i : inputs) {
 			i.accept(data);
 		}
 

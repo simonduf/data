@@ -4,6 +4,7 @@
 package data.node;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,24 @@ public class ConnectionManager {
 		objects.add(o);
 	}
 	
+	public List<Node> getNodes()
+	{
+		return new ArrayList<Node>(objects);
+	}
+	
+	public <T> boolean isConnectable(Input<T> i, Output<T> o)
+	{
+		return getOutputType(o) != getInputType(i);
+	}
+	
+	public <T> void connect(Input<T> i, Output<T> o)
+	{
+		if(getOutputType(o) != getInputType(i))
+			throw new RuntimeException();
+		
+		o.connect(i);
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void connect( Object inputNode, String inputName, Object outputNode, String outputName )
 	{
@@ -37,10 +56,7 @@ public class ConnectionManager {
 			throw new RuntimeException();
 		//TODO exceptions
 		
-		if(getOutputType(output) != getInputType(input))
-			throw new RuntimeException();
-		
-		output.connect(input);
+		connect(input, output);
 	}
 
 	public boolean isNode(Object o)
