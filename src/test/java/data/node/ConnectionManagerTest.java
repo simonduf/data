@@ -4,31 +4,31 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class ReflexionConnectionManagerTest {
+public class ConnectionManagerTest {
 
 
 
-	@Test
-	public void testIsNode() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
-		
-		class NotANode extends Object {};
-		
-		@Node(name = "The Node!")
-		class DefinitlyANode extends Object {};
-		
-		NotANode notANode = new NotANode();
-		DefinitlyANode ANode = new DefinitlyANode();
-		
-		
-		assertFalse(cm.isNode(notANode));
-		assertTrue(cm.isNode(ANode));
-	}
+//	@Test
+//	public void testIsNode() {
+//		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+//		
+//		class NotANode extends Object {};
+//		
+//		@Node(name = "The Node!")
+//		class DefinitlyANode extends Object {};
+//		
+//		NotANode notANode = new NotANode();
+//		DefinitlyANode ANode = new DefinitlyANode();
+//		
+//		
+//		assertFalse(cm.isNode(notANode));
+//		assertTrue(cm.isNode(ANode));
+//	}
 	
 
 	@Test
 	public void testGetOutput() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
 		class ANode extends Object {
 			public Output<?> output = new Output<Double>(){};
@@ -41,7 +41,7 @@ public class ReflexionConnectionManagerTest {
 
 	@Test
 	public void testGetOutputType() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
 		class ANode extends Object {
 			public Output<?> output = new Output<Double>(){};
@@ -55,7 +55,7 @@ public class ReflexionConnectionManagerTest {
 	
 	@Test
 	public void testGetInputType() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
 		class ANode extends Object {
 			public Input<Double> input = new Input<Double>(this::processData){};
@@ -69,15 +69,18 @@ public class ReflexionConnectionManagerTest {
 	
 	@Test
 	public void testConnect() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
-		@Node(name = "The Node!")
-		class ANode extends Object {
+		class ANode implements Node {
 			@SuppressWarnings("unused")
 			public Input<?> input = new Input<Double>(this::processData){};
 			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Double>(){};
 			private void processData(Double d){	}
+			@Override
+			public String getNodeName() {
+				return "ANode";
+			}
 		};
 		
 		ANode node = new ANode();
@@ -88,15 +91,18 @@ public class ReflexionConnectionManagerTest {
 	
 	@Test(expected= RuntimeException.class)
 	public void testConnectMissingInput() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
-		@Node(name = "The Node!")
-		class ANode extends Object {
+
+		class ANode implements Node {
 			@SuppressWarnings("unused")
 			public Input<?> inputNotWanted = new Input<Double>(this::processData){};
 			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Double>(){};
 			private void processData(Double d){	}
+			public String getNodeName() {
+				return "ANode";
+			}
 		};
 		
 		ANode node = new ANode();
@@ -107,24 +113,29 @@ public class ReflexionConnectionManagerTest {
 	
 	@Test(expected= RuntimeException.class)
 	public void testConnectOfDifferentTypes() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
-		@Node(name = "The Integer Node!")
-		class IntegerNode extends Object {
+		class IntegerNode implements Node {
 			@SuppressWarnings("unused")
 			public Input<?> input = new Input<Integer>(this::processData){};
 			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Integer>(){};
 			private void processData(Integer d){	}
+			public String getNodeName() {
+				return "The Integer Node!";
+			}
 		};
 		
-		@Node(name = "The Double Node!")
-		class DoubleNode extends Object {
+
+		class DoubleNode implements Node {
 			@SuppressWarnings("unused")
 			public Input<?> input = new Input<Double>(this::processData){};
 			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Double>(){};
 			private void processData(Double d){	}
+			public String getNodeName() {
+				return "The Double Node!";
+			}
 		};
 		
 		IntegerNode node = new IntegerNode();
@@ -135,24 +146,29 @@ public class ReflexionConnectionManagerTest {
 	
 	@Test(expected= RuntimeException.class)
 	public void testConnectOfDifferentTypes2() {
-		ReflexionConnectionManager cm = new ReflexionConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		
-		@Node(name = "The Integer Node!")
-		class IntegerNode extends Object {
+
+		class IntegerNode implements Node {
 			@SuppressWarnings("unused")
 			public Input<?> input = new Input<Integer>(this::processData){};
 			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Integer>(){};
 			private void processData(Integer d){	}
+			public String getNodeName() {
+				return "The Integer Node!";
+			}
 		};
 		
-		@Node(name = "The Double Node!")
-		class DoubleNode extends Object {
+		class DoubleNode implements Node {
 			@SuppressWarnings("unused")
 			public Input<?> input = new Input<Double>(this::processData){};
 			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Double>(){};
 			private void processData(Double d){	}
+			public String getNodeName() {
+				return "The Double Node!";
+			}
 		};
 		
 		IntegerNode node = new IntegerNode();

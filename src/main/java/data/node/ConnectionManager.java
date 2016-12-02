@@ -13,15 +13,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Simon Dufour
  *
  */
-public class ReflexionConnectionManager {
-	private final List<Object>	objects		= new CopyOnWriteArrayList<>();
+public class ConnectionManager {
+	private final List<Node>	objects		= new CopyOnWriteArrayList<>();
 	
 	
-	public void add(Object o)
+	public void add(Node o)
 	{
-		Node n = o.getClass().getAnnotation(Node.class);
-		if(n!=null)
-			objects.add(o);
+		objects.add(o);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -47,16 +45,9 @@ public class ReflexionConnectionManager {
 
 	public boolean isNode(Object o)
 	{
-		return o.getClass().getAnnotation(Node.class)!= null;
+		return o instanceof Node;
+		//return o.getClass().getAnnotation(Node.class)!= null;
 	}
-	
-	public String getName(Object o )
-	{
-		if(isNode(o))
-			return (o.getClass().getAnnotation(Node.class)).name();
-		return null;
-	}
-	
 	
 	@SuppressWarnings("unchecked")
 	private <T> Map<String,T> getFieldFromType(Object o, Class<T> c)
