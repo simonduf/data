@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -156,6 +157,21 @@ public class ConnectionManager {
 		return null;
 	}
 	
+	public String getName(Input<?> i)
+	{
+		return getInputs(getParent(i)).entrySet().stream()
+				  .filter(entry -> Objects.equals(entry.getValue(), i))
+	              .map(Map.Entry::getKey)
+	              .findAny().get();
+	}
+	
+	public String getName(Output<?> i)
+	{
+		return getOutputs(getParent(i)).entrySet().stream()
+				  .filter(entry -> Objects.equals(entry.getValue(), i))
+	              .map(Map.Entry::getKey)
+	              .findAny().get();
+	}
 	
 	public Node getParent(Input<?> input)
 	{
