@@ -15,17 +15,26 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  */
 public class ConnectionManager {
-	private final List<Node>	objects		= new CopyOnWriteArrayList<>();
+	private final List<Node>	nodes		= new CopyOnWriteArrayList<>();
 	
 	
 	public void add(Node o)
 	{
-		objects.add(o);
+		nodes.add(o);
 	}
 	
 	public List<Node> getNodes()
 	{
-		return new ArrayList<Node>(objects);
+		return new ArrayList<Node>(nodes);
+	}
+	
+	public void dispose(Node n)
+	{
+		nodes.remove(n);
+		
+		//TODO
+		//n.getOutputs.disconnect...
+		//n.getInputs.disconnect
 	}
 	
 	public <T> boolean isConnectable(Input<T> i, Output<T> o)
@@ -41,8 +50,15 @@ public class ConnectionManager {
 		o.connect(i);
 	}
 	
+	
+	public <T> void disconnect(Input<T> i, Output<T> o)
+	{	
+		o.disconect(i);
+		//TODO event?
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void connect( Object inputNode, String inputName, Object outputNode, String outputName )
+	public void connect( Node inputNode, String inputName, Node outputNode, String outputName )
 	{
 		if(!isNode(inputNode))
 			throw new RuntimeException();
@@ -81,29 +97,29 @@ public class ConnectionManager {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Map<String, Output> getOutputs(Object o)
+	public Map<String, Output> getOutputs(Node n)
 	{
-		return getFieldFromType(o, Output.class);
+		return getFieldFromType(n, Output.class);
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Map<String, Input> getInputs(Object o)
+	public Map<String, Input> getInputs(Node n)
 	{
-		return getFieldFromType(o, Input.class);
+		return getFieldFromType(n, Input.class);
 	}
 	
-	public Output<?> getOutputByName(Object o, String outputName)
+	public Output<?> getOutputByName(Node n, String outputName)
 	{
 		if(outputName == null || outputName.isEmpty())
 			throw new RuntimeException("Cannot search for non existing or empty name");		
-		return getOutputs(o).get(outputName);
+		return getOutputs(n).get(outputName);
 	}
 	
-	public Input<?> getInputByName(Object o, String outputName)
+	public Input<?> getInputByName(Node n, String outputName)
 	{
 		if(outputName == null || outputName.isEmpty())
 			throw new RuntimeException("Cannot search for non existing or empty name");		
-		return getInputs(o).get(outputName);
+		return getInputs(n).get(outputName);
 	}
 	
 	
@@ -123,4 +139,13 @@ public class ConnectionManager {
 		return result.get(0);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T> Output<T> getOutput(Input<T> input)
+	{
+		for(Node n: nodes)
+			for(Output<T> o:getOutputs(n).values())
+				if(o.getConnectedInputs().contains(input))
+					return o;
+		return null;
+	}
 }

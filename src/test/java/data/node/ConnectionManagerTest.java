@@ -30,8 +30,11 @@ public class ConnectionManagerTest {
 	public void testGetOutput() {
 		ConnectionManager cm = new ConnectionManager();
 		
-		class ANode extends Object {
+		class ANode implements Node {
 			public Output<?> output = new Output<Double>(){};
+
+			@Override
+			public String getNodeName() {return "ANode";}
 		};
 		
 		ANode node = new ANode();
