@@ -37,27 +37,29 @@ public class ConnectionManager {
 		//n.getInputs.disconnect
 	}
 	
-	public <T> boolean isConnectable(Input<T> i, Output<T> o)
+	public boolean isConnectable(Input<?> i, Output<?> o)
 	{
 		return getOutputType(o) != getInputType(i);
 	}
 	
-	public <T> void connect(Input<T> i, Output<T> o)
+	@SuppressWarnings("unchecked")
+	public  void connect(Input<?> i, Output<?> o)
 	{
 		if(getOutputType(o) != getInputType(i))
 			throw new RuntimeException();
 		
-		o.connect(i);
+		((Output<Object>)o).connect( (Input<Object>)i );
 	}
 	
 	
-	public <T> void disconnect(Input<T> i, Output<T> o)
+	@SuppressWarnings("unchecked")
+	public void disconnect(Input<?> i, Output<?> o)
 	{	
-		o.disconect(i);
+		((Output<Object>)o).disconect( (Input<Object>)i );
 		//TODO event?
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	public void connect( Node inputNode, String inputName, Node outputNode, String outputName )
 	{
 		if(!isNode(inputNode))
