@@ -39,13 +39,18 @@ public class ConnectionManager {
 	
 	public boolean isConnectable(Input<?> i, Output<?> o)
 	{
-		return getOutputType(o) != getInputType(i);
+		Node parentI = getParent(i);
+		Node parentO = getParent(o);		
+		if( parentI != null && parentI == parentO )
+			return false;
+		
+		return getOutputType(o) == getInputType(i);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public  void connect(Input<?> i, Output<?> o)
 	{
-		if(getOutputType(o) != getInputType(i))
+		if(!isConnectable(i,o))
 			throw new RuntimeException();
 		
 		((Output<Object>)o).connect( (Input<Object>)i );
@@ -148,6 +153,25 @@ public class ConnectionManager {
 			for(Output<T> o:getOutputs(n).values())
 				if(o.getConnectedInputs().contains(input))
 					return o;
+		return null;
+	}
+	
+	
+	public Node getParent(Input<?> input)
+	{
+		for(Node n: nodes)
+			for(Input<?> i : getInputs(n).values())
+				if(i == input)
+					return n;
+		return null;
+	}
+	
+	public Node getParent(Output<?> output)
+	{
+		for(Node n: nodes)
+			for(Output<?> o:getOutputs(n).values())
+				if(o == output)
+					return n;
 		return null;
 	}
 }

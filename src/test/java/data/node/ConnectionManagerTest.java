@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+
 public class ConnectionManagerTest {
 
 
@@ -88,6 +89,9 @@ public class ConnectionManagerTest {
 		
 		ANode node = new ANode();
 		ANode anotherNode = new ANode();
+		
+		cm.add(node);
+		cm.add(anotherNode);
 		
 		cm.connect(node, "input", anotherNode, "output");
 	}
@@ -179,4 +183,57 @@ public class ConnectionManagerTest {
 		
 		cm.connect(anotherNode, "input", node, "output");
 	}
+	
+	
+	
+	@Test
+	public void testIsConnectable() {
+		ConnectionManager cm = new ConnectionManager();
+		
+
+		class IntegerNode implements Node {
+			public Input<?> input = new Input<Integer>(this::processData){};
+			public Output<?> output = new Output<Integer>(){};
+			private void processData(Integer d){	}
+			public String getNodeName() {
+				return "The Integer Node!";
+			}
+		};
+		
+		class DoubleNode implements Node {
+			public Input<?> input = new Input<Double>(this::processData){};
+			public Output<?> output = new Output<Double>(){};
+			private void processData(Double d){	}
+			public String getNodeName() {
+				return "The Double Node!";
+			}
+		};
+		
+		IntegerNode intnode = new IntegerNode();
+		DoubleNode  doubleNode= new DoubleNode();
+		IntegerNode anotherIntNode = new IntegerNode();
+		DoubleNode anotherDoubleNode = new DoubleNode();
+		
+		cm.add(intnode);
+		cm.add(doubleNode);
+		cm.add(anotherIntNode);
+		cm.add(anotherDoubleNode);
+		
+		assertSame(intnode, cm.getParent(intnode.input));
+		assertSame(intnode, cm.getParent(intnode.output));
+		
+		assertTrue(cm.isConnectable(intnode.input, anotherIntNode.output));
+		assertTrue(cm.isConnectable(anotherIntNode.input, intnode.output));
+		
+		assertTrue(cm.isConnectable(doubleNode.input, anotherDoubleNode.output));
+		assertTrue(cm.isConnectable(anotherDoubleNode.input, doubleNode.output));
+		
+		assertFalse(cm.isConnectable(intnode.input, doubleNode.output));
+		assertFalse(cm.isConnectable(doubleNode.input, intnode.output));
+		
+		assertFalse(cm.isConnectable(doubleNode.input, doubleNode.output));
+		assertFalse(cm.isConnectable(intnode.input, intnode.output));
+		
+	}
+	
 }
