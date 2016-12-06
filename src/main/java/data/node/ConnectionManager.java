@@ -104,16 +104,22 @@ public class ConnectionManager {
 		return results;
 	}
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes" })
 	public Map<String, Output> getOutputs(Node n)
 	{
-		return getFieldFromType(n, Output.class);
+		Map<String, Output> map =  getFieldFromType(n, Output.class);
+		if(n.getOutputs()!=null)
+			n.getOutputs().forEach(map::putIfAbsent);
+		return map;
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public Map<String, Input> getInputs(Node n)
 	{
-		return getFieldFromType(n, Input.class);
+		Map<String, Input> map = getFieldFromType(n, Input.class);
+		if(n.getInputs()!=null)
+			n.getInputs().forEach(map::putIfAbsent);
+		return map;
 	}
 	
 	public Output<?> getOutputByName(Node n, String outputName)
