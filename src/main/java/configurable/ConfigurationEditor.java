@@ -3,6 +3,8 @@
  */
 package configurable;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -104,6 +106,7 @@ public class ConfigurationEditor {
 		final Method getter;
 		final Method setter;
 		final Class<?> type;
+		final protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 		
 		public Parameter(String name, Object parent, Method getter, Method setter) {
 			this.name = name;
@@ -128,13 +131,40 @@ public class ConfigurationEditor {
 		
 		public void set(Object o)
 		{
+			Object old = get();
 			try {
 				setter.invoke(parent, o);
+				pcs.firePropertyChange(name, old, get());
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+		/**
+		 * Add a property change listener for a specific property.
+		 * 
+		 * @param propertyName
+		 *            The name of the property to listen on.
+		 * @param listener
+		 *            The <code>PropertyChangeListener</code> to be added.
+		 */
+		public void addPropertyChangeListener(final String propertyName, final PropertyChangeListener listener) {
+			pcs.addPropertyChangeListener(propertyName, listener);
+		}
+
+		/**
+		 * Remove a property change listener for a specific property.
+		 * 
+		 * @param propertyName
+		 *            The name of the property that was listened on.
+		 * @param listener
+		 *            The <code>PropertyChangeListener</code> to be removed
+		 */
+		public void removePropertyChangeListener(final String propertyName, final PropertyChangeListener listener) {
+			pcs.removePropertyChangeListener(propertyName, listener);
+		}
+
 	}
 	
 	public static List<Method> getMethodsAnnotatedWith(final Class<?> type, final Class<? extends Annotation> annotation) {
