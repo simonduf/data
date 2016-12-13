@@ -3,13 +3,12 @@
  */
 package data.node;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * @author Simon Dufour
@@ -17,11 +16,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ConnectionManager {
 	private final List<Node>	nodes		= new CopyOnWriteArrayList<>();
+	private final List<NodeEventListener>	listeners		= new CopyOnWriteArrayList<>();
 	
-	
-	public void add(Node o)
+	public void add(Node n)
 	{
-		nodes.add(o);
+		if(nodes.contains(n))
+			return;
+		
+		nodes.add(n);
+		sendEvent(new NodeEvent(NodeEvent.CONNNECTION, n, null, null, null ) );
 	}
 	
 	public List<Node> getNodes()
@@ -32,10 +35,14 @@ public class ConnectionManager {
 	public void dispose(Node n)
 	{
 		nodes.remove(n);
+		n.dispose();
+		for(Output<?> o: n.getOutputs().values())
+			for(Input<?> i: o.getConnectedInputs())
+				disconnect( i, o );
 		
 		//TODO
-		//n.getOutputs.disconnect...
 		//n.getInputs.disconnect
+		sendEvent(new NodeEvent(NodeEvent.DISPOSE_NODE, n, null, null, null ) );
 	}
 	
 	public boolean isConnectable(Input<?> i, Output<?> o)
@@ -49,12 +56,13 @@ public class ConnectionManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public  void connect(Input<?> i, Output<?> o)
+	public <T> void connect(Input<T> i, Output<T> o)
 	{
 		if(!isConnectable(i,o))
 			throw new RuntimeException();
 		
 		((Output<Object>)o).connect( (Input<Object>)i );
+		sendEvent(new NodeEvent(NodeEvent.CONNNECTION, getParent(o), getParent(i),i,o ) );
 	}
 	
 	
@@ -62,10 +70,10 @@ public class ConnectionManager {
 	public void disconnect(Input<?> i, Output<?> o)
 	{	
 		((Output<Object>)o).disconect( (Input<Object>)i );
-		//TODO event?
+		 sendEvent(new NodeEvent(NodeEvent.DISCONNECTION, getParent(o), getParent(i),i,o ) );
 	}
 	
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public void connect( Node inputNode, String inputName, Node outputNode, String outputName )
 	{
 		if(!isNode(inputNode))
@@ -73,14 +81,14 @@ public class ConnectionManager {
 		if(!isNode(outputNode))
 			throw new RuntimeException();
 		
-		Output output = getOutputByName(outputNode, outputName);
-		Input input = getInputByName(inputNode, inputName);
+		Output<?> output = getOutputByName(outputNode, outputName);
+		Input<?> input = getInputByName(inputNode, inputName);
 		
 		if( output==null || input == null)
 			throw new RuntimeException();
 		//TODO exceptions
 		
-		connect(input, output);
+		connect((Input<Object>) input,(Output<Object>) output);
 	}
 
 	public boolean isNode(Object o)
@@ -89,25 +97,10 @@ public class ConnectionManager {
 		//return o.getClass().getAnnotation(Node.class)!= null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private <T> Map<String,T> getFieldFromType(Object o, Class<T> c)
-	{
-		Map<String,T> results= new HashMap<>();
-		for ( Field field : o.getClass().getFields())
-			if(c.isAssignableFrom(field.getType()))
-					try {
-						results.put(field.getName(), (T) field.get(o)); 
-					} catch (IllegalAccessException | IllegalArgumentException e) {
-						e.printStackTrace();
-					}
-		
-		return results;
-	}
-	
 	@SuppressWarnings({ "rawtypes" })
 	public Map<String, Output> getOutputs(Node n)
 	{
-		Map<String, Output> map =  getFieldFromType(n, Output.class);
+		Map<String, Output> map =  ReflectionUtils.getFieldFromType(n, Output.class);
 		if(n.getOutputs()!=null)
 			n.getOutputs().forEach(map::putIfAbsent);
 		return map;
@@ -116,7 +109,7 @@ public class ConnectionManager {
 	@SuppressWarnings("rawtypes")
 	public Map<String, Input> getInputs(Node n)
 	{
-		Map<String, Input> map = getFieldFromType(n, Input.class);
+		Map<String, Input> map = ReflectionUtils.getFieldFromType(n, Input.class);
 		if(n.getInputs()!=null)
 			n.getInputs().forEach(map::putIfAbsent);
 		return map;
@@ -195,5 +188,47 @@ public class ConnectionManager {
 				if(o == output)
 					return n;
 		return null;
+	}
+	
+	public static interface NodeEventListener extends Consumer<NodeEvent>{};
+	
+	public static class NodeEvent
+	{
+		public final static String CONNNECTION = "Connection";
+		public final static String DISCONNECTION = "Disconnection";
+		public final static String NEW_NODE = "New Node";
+		public final static String DISPOSE_NODE = "Dispose";
+		
+		public final String event;
+		public final Node sourceNode;
+		public final Node destNode;
+		public final Input<?> destInput;
+		public final Output<?> sourceOutput;
+		
+		public NodeEvent(String event, Node sourceNode, Node destNode, Input<?> destInput, Output<?> sourceOutput) {
+			super();
+			this.event = event;
+			this.sourceNode = sourceNode;
+			this.destNode = destNode;
+			this.destInput = destInput;
+			this.sourceOutput = sourceOutput;
+		}
+		
+	}
+	
+	protected void sendEvent(NodeEvent e )
+	{
+		for(NodeEventListener l : listeners)
+			l.accept(e);
+	}
+	
+	public void addListener( NodeEventListener listener )
+	{
+		listeners.add(listener);
+	}
+	
+	public void removeListener( NodeEventListener listener )
+	{
+		listeners.remove(listener);
 	}
 }

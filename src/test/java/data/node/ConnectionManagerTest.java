@@ -70,15 +70,12 @@ public class ConnectionManagerTest {
 		
 		assertEquals(Double.class ,cm.getInputType(node.input));
 	}
-	
-	@Test
-	public void testConnect() {
+		@Test
+	public void testConnectUsingName() {
 		ConnectionManager cm = new ConnectionManager();
 		
 		class ANode implements Node {
-			@SuppressWarnings("unused")
 			public Input<?> input = new Input<Double>(this::processData){};
-			@SuppressWarnings("unused")
 			public Output<?> output = new Output<Double>(){};
 			private void processData(Double d){	}
 			@Override
@@ -94,6 +91,36 @@ public class ConnectionManagerTest {
 		cm.add(anotherNode);
 		
 		cm.connect(node, "input", anotherNode, "output");
+		assertTrue(anotherNode.output.getConnectedInputs().contains(node.input));
+		cm.disconnect(node.input, anotherNode.output);
+		assertFalse(anotherNode.output.getConnectedInputs().contains(node.input));
+	}
+		
+		
+	@Test
+	public void testConnectTypeSafe() {
+		ConnectionManager cm = new ConnectionManager();
+		
+		class ANode implements Node {
+			public Input<Double> input = new Input<Double>(this::processData){};
+			public Output<Double> output = new Output<Double>(){};
+			private void processData(Double d){	}
+			@Override
+			public String getNodeName() {
+				return "ANode";
+			}
+		};
+		
+		ANode node = new ANode();
+		ANode anotherNode = new ANode();
+		
+		cm.add(node);
+		cm.add(anotherNode);
+		
+		cm.connect(node.input, anotherNode.output);
+		assertTrue(anotherNode.output.getConnectedInputs().contains(node.input));
+		cm.disconnect(node.input, anotherNode.output);
+		assertFalse(anotherNode.output.getConnectedInputs().contains(node.input));
 	}
 	
 	@Test(expected= RuntimeException.class)

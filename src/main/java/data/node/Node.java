@@ -12,6 +12,11 @@ import java.util.Map;
 public interface Node {
 	public String getNodeName();
 	
+	default void dispose()
+	{
+		
+	}
+	
 	default Map<String, Output<?>> getOutputs()
 	{
 		return null;

@@ -4,6 +4,7 @@
 package data.node;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -92,5 +93,20 @@ public class ReflectionUtils {
 		} else {
 			return null;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Map<String,T> getFieldFromType(Object o, Class<T> c)
+	{
+		Map<String,T> results= new HashMap<>();
+		for ( Field field : o.getClass().getFields())
+			if(c.isAssignableFrom(field.getType()))
+					try {
+						results.put(field.getName(), (T) field.get(o)); 
+					} catch (IllegalAccessException | IllegalArgumentException e) {
+						e.printStackTrace();
+					}
+		
+		return results;
 	}
 }
