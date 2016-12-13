@@ -24,7 +24,7 @@ public class ConnectionManager {
 			return;
 		
 		nodes.add(n);
-		sendEvent(new NodeEvent(NodeEvent.CONNNECTION, n, null, null, null ) );
+		sendEvent(new NodeEvent(NodeEvent.NEW_NODE, n, null, null, null ) );
 	}
 	
 	public List<Node> getNodes()
