@@ -2,7 +2,13 @@ package data.node;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
+
+import data.node.ConnectionManager.NodeEvent;
+import data.node.Disposable.DisposableSupport;
 
 
 public class ConnectionManagerTest {
@@ -262,5 +268,71 @@ public class ConnectionManagerTest {
 		assertFalse(cm.isConnectable(intnode.input, intnode.output));
 		
 	}
+	
+
+	@Test
+	public void testDisposeAndEvents(){
+		ConnectionManager cm = new ConnectionManager();
+		
+
+		class IntegerNode extends DisposableSupport implements Node  {
+			public Input<Integer> input = new Input<Integer>(this::processData){};
+			public Output<Integer> output = new Output<Integer>(){};
+			private void processData(Integer d){	}
+			public String getNodeName() {
+				return "The Integer Node!";
+			}
+		};
+		
+		IntegerNode intnode = new IntegerNode();
+		IntegerNode anotherIntNode = new IntegerNode();
+		
+		List<NodeEvent> events = new ArrayList<>();
+		cm.addListener( e->events.add(e) );
+		
+		cm.add(intnode);
+		assertEventOccured(events, new NodeEvent(NodeEvent.NEW_NODE, intnode, null, null, null));
+		
+		cm.add(anotherIntNode);
+		assertEventOccured(events, new NodeEvent(NodeEvent.NEW_NODE, anotherIntNode, null, null, null));
+		
+		cm.connect(intnode.input, anotherIntNode.output);
+		assertEventOccured(events, new NodeEvent(NodeEvent.CONNNECTION, anotherIntNode, intnode, intnode.input, anotherIntNode.output));
+		
+		cm.disconnect(intnode.input, anotherIntNode.output);
+		assertEventOccured(events, new NodeEvent(NodeEvent.DISCONNECTION, anotherIntNode, intnode, intnode.input, anotherIntNode.output));
+		
+		cm.connect(intnode.input, anotherIntNode.output);
+		assertEventOccured(events, new NodeEvent(NodeEvent.CONNNECTION, anotherIntNode, intnode, intnode.input, anotherIntNode.output));
+		assertFalse( anotherIntNode.output.getConnectedInputs().isEmpty());
+		
+		cm.connect(anotherIntNode.input, intnode.output);
+		assertEventOccured(events, new NodeEvent(NodeEvent.CONNNECTION, intnode, anotherIntNode, anotherIntNode.input, intnode.output));
+		assertFalse( anotherIntNode.output.getConnectedInputs().isEmpty());
+		
+		cm.dispose(intnode);
+		assertEventOccured(events, new NodeEvent(NodeEvent.DISPOSE_NODE, intnode, null, null, null));
+		assertEventOccured(events, new NodeEvent(NodeEvent.DISCONNECTION, anotherIntNode, intnode, intnode.input, anotherIntNode.output));
+		assertEventOccured(events, new NodeEvent(NodeEvent.DISCONNECTION, intnode, anotherIntNode, anotherIntNode.input, intnode.output));
+		
+		assertTrue( anotherIntNode.output.getConnectedInputs().isEmpty());
+		assertTrue( intnode.output.getConnectedInputs().isEmpty());
+		
+		cm.dispose(anotherIntNode);
+		assertEventOccured(events, new NodeEvent(NodeEvent.DISPOSE_NODE, anotherIntNode, null, null, null));
+		
+		// Disposition events may occurs twice with current implementation
+		// remove extra event and confirm that none are unprocessed
+		events.remove(new NodeEvent(NodeEvent.DISPOSE_NODE, intnode, null, null, null));
+		events.remove(new NodeEvent(NodeEvent.DISPOSE_NODE, anotherIntNode, null, null, null));
+		assertTrue(events.isEmpty());
+	}
+	
+	static private void assertEventOccured(List<NodeEvent> list, NodeEvent e )
+	{
+		assertTrue("Event did not occurent",  list.remove(e));
+	}
+	
+	
 	
 }

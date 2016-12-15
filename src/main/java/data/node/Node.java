@@ -12,17 +12,12 @@ import java.util.Map;
 public interface Node {
 	public String getNodeName();
 	
-	default void dispose()
-	{
-		
-	}
-	
-	default Map<String, Output<?>> getOutputs()
+	default Map<String, Output<?>> getDynamicOutputs()
 	{
 		return null;
 	}
 	
-	default Map<String, Input<?>> getInputs()
+	default Map<String, Input<?>> getDynamicInputs()
 	{
 		return null;
 	}

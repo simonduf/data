@@ -10,11 +10,14 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
+import data.node.Disposable.DisposableEventListener;
+import data.node.Disposable.DisposableEventProvider;
+
 /**
  * @author Simon Dufour
  *
  */
-public class ConnectionManager {
+public class ConnectionManager implements DisposableEventListener {
 	private final List<Node>	nodes		= new CopyOnWriteArrayList<>();
 	private final List<NodeEventListener>	listeners		= new CopyOnWriteArrayList<>();
 	
@@ -22,6 +25,9 @@ public class ConnectionManager {
 	{
 		if(nodes.contains(n))
 			return;
+		
+		if(n instanceof DisposableEventProvider)
+			((DisposableEventProvider) n).addDisposeListener(this);
 		
 		nodes.add(n);
 		sendEvent(new NodeEvent(NodeEvent.NEW_NODE, n, null, null, null ) );
@@ -32,17 +38,41 @@ public class ConnectionManager {
 		return new ArrayList<Node>(nodes);
 	}
 	
+	@Override
+	public void wasDisposed(Object o) 
+	{
+		if(! (o instanceof Node))
+			return;
+		
+		Node n = (Node)o;
+		
+		for(Output<?> output: getOutputs(n).values())
+			for(Input<?> i: output.getConnectedInputs())
+				disconnect( i, output );
+		
+		//TODO Test this
+		//Disconnect any input of the referenced node
+		for(Node nodeInList : nodes)
+			for(Output<?> outputInList: getOutputs(nodeInList).values() )
+				for(Input<?> inputInList : outputInList.getConnectedInputs() )
+					if(getInputs(n).containsValue(inputInList))
+						disconnect(inputInList, outputInList);
+		
+		nodes.remove(n);
+		
+		sendEvent(new NodeEvent(NodeEvent.DISPOSE_NODE, n, null, null, null ) );
+	}
+	
 	public void dispose(Node n)
 	{
-		nodes.remove(n);
-		n.dispose();
-		for(Output<?> o: n.getOutputs().values())
-			for(Input<?> i: o.getConnectedInputs())
-				disconnect( i, o );
+		// If the node is disposable, we should have register the ConnectionManager to the DisposeEventProvider
+		// The callback from calling dispose should call wasDisposed when the object is ready.
+		if(n instanceof Disposable)
+			((Disposable) n).dispose();
 		
-		//TODO
-		//n.getInputs.disconnect
-		sendEvent(new NodeEvent(NodeEvent.DISPOSE_NODE, n, null, null, null ) );
+		// We call the method manually because there is no harm calling it twice for disposable...
+		// Also call it for node that are not disposable
+		wasDisposed(n);
 	}
 	
 	public boolean isConnectable(Input<?> i, Output<?> o)
@@ -101,8 +131,9 @@ public class ConnectionManager {
 	public Map<String, Output> getOutputs(Node n)
 	{
 		Map<String, Output> map =  ReflectionUtils.getFieldFromType(n, Output.class);
-		if(n.getOutputs()!=null)
-			n.getOutputs().forEach(map::putIfAbsent);
+		Map<String, Output<?>> dynamicOutputs = n.getDynamicOutputs();
+		if(dynamicOutputs!=null)
+			dynamicOutputs.forEach(map::putIfAbsent);
 		return map;
 	}
 	
@@ -110,8 +141,9 @@ public class ConnectionManager {
 	public Map<String, Input> getInputs(Node n)
 	{
 		Map<String, Input> map = ReflectionUtils.getFieldFromType(n, Input.class);
-		if(n.getInputs()!=null)
-			n.getInputs().forEach(map::putIfAbsent);
+		Map<String, Input<?>> dynamicInput = n.getDynamicInputs();
+		if(dynamicInput !=null)
+			dynamicInput.forEach(map::putIfAbsent);
 		return map;
 	}
 	
@@ -213,6 +245,56 @@ public class ConnectionManager {
 			this.destInput = destInput;
 			this.sourceOutput = sourceOutput;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((destInput == null) ? 0 : destInput.hashCode());
+			result = prime * result + ((destNode == null) ? 0 : destNode.hashCode());
+			result = prime * result + ((event == null) ? 0 : event.hashCode());
+			result = prime * result + ((sourceNode == null) ? 0 : sourceNode.hashCode());
+			result = prime * result + ((sourceOutput == null) ? 0 : sourceOutput.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			NodeEvent other = (NodeEvent) obj;
+			if (destInput == null) {
+				if (other.destInput != null)
+					return false;
+			} else if (!destInput.equals(other.destInput))
+				return false;
+			if (destNode == null) {
+				if (other.destNode != null)
+					return false;
+			} else if (!destNode.equals(other.destNode))
+				return false;
+			if (event == null) {
+				if (other.event != null)
+					return false;
+			} else if (!event.equals(other.event))
+				return false;
+			if (sourceNode == null) {
+				if (other.sourceNode != null)
+					return false;
+			} else if (!sourceNode.equals(other.sourceNode))
+				return false;
+			if (sourceOutput == null) {
+				if (other.sourceOutput != null)
+					return false;
+			} else if (!sourceOutput.equals(other.sourceOutput))
+				return false;
+			return true;
+		}
+		
 		
 	}
 	
