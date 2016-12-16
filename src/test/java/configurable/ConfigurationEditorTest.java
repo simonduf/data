@@ -5,13 +5,8 @@ package configurable;
 
 import static org.junit.Assert.*;
 
-import java.util.Optional;
-
-import javax.swing.JOptionPane;
-
 import org.junit.Test;
 
-import configurable.ConfigurationEditor.Parameter;
 
 /**
  * @author Simon Dufour
